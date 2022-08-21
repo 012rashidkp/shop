@@ -1,9 +1,11 @@
+from inspect import ArgSpec
+from django.urls import is_valid_path
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Category,Product,Banner,UploadFile
-from .Serializers import BannerSerializer,CategorySerializer,Productserializer,FileSerializer
+from .Serializers import BannerSerializer,CategorySerializer,Productserializer,FileSerializer,multipleuploadserializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.parsers import MultiPartParser,FormParser
@@ -178,6 +180,8 @@ class fileupdate(APIView):
         return Response(data)            
     
 
+
+
 class Catwiseproduct(APIView):
     permission_classes = [IsAuthenticated, ]
     authentication_classes = [TokenAuthentication, ]
@@ -185,8 +189,7 @@ class Catwiseproduct(APIView):
     def get(self, request):
         category_id = request.data.get("category_id")
         query = Product.objects.filter(category_id=category_id)
-        serializer = Productserializer(
-            query, many=True, context={'request': request})
+        serializer = Productserializer(query, many=True, context={'request': request})
         data = {}
         if category_id is None:
             data["error"] = True
@@ -200,4 +203,38 @@ class Catwiseproduct(APIView):
         else:
             data["error"] = True
             data["message"] = "no datas found"
-        return Response(data)    
+        return Response(data)
+    
+    
+    
+    
+class multipleupload(APIView):
+    permission_classes = [IsAuthenticated, ]
+    authentication_classes = [TokenAuthentication, ]
+    parser_classes = (MultiPartParser, FormParser)
+   
+    def post(self, request, *args, **kwargs):
+        serializer_class = multipleuploadserializer(data=request.data)
+        if 'myfile' not in request.FILES or not serializer_class.is_valid():
+            return Response({"error":True,"message":"something went wrong"}) 
+        else:
+            files = request.FILES.getlist('myfile')
+            for f in files:
+                handle_uploaded_file(f)
+
+            return Response({"error":False,"message":"file uploaded successfully"})
+           
+def handle_uploaded_file(f):
+    with open(f.name, 'wb+') as destination:
+        for chunk in f.chunks():
+            destination.write(chunk)           
+            
+        
+                
+        
+      
+        
+        
+
+      
+       

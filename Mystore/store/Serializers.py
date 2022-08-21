@@ -1,3 +1,4 @@
+from pyexpat import model
 from rest_framework import serializers
 from .models import Banner,Category,ProductImage,ProductColor,ProductSize,Product,UploadFile
 
@@ -67,4 +68,17 @@ class FileSerializer(serializers.ModelSerializer):
     file_id = serializers.CharField(source='file_id',read_only=True)
     class Meta:
         model = UploadFile
-        fields = ('file_id','fileName', 'fileDesc', 'myfile')                                      
+        fields = ('file_id','fileName', 'fileDesc', 'myfile')  
+
+class multipleuploadserializer(serializers.ModelSerializer):
+    file_id = serializers.CharField(source='file_id',read_only=True)
+    class Meta:
+        model=UploadFile
+        fields = ('file_id','fileName', 'fileDesc', 'myfile') 
+        
+    def get_product_name(self,product):
+        product =Product.title
+        return product   
+        
+                                                 
+        
