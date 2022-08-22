@@ -1,3 +1,4 @@
+from dis import dis
 from inspect import ArgSpec
 from django.urls import is_valid_path
 from rest_framework.permissions import AllowAny
@@ -212,22 +213,36 @@ class multipleupload(APIView):
     permission_classes = [IsAuthenticated, ]
     authentication_classes = [TokenAuthentication, ]
     parser_classes = (MultiPartParser, FormParser)
-   
-    def post(self, request, *args, **kwargs):
-        serializer_class = multipleuploadserializer(data=request.data)
-        if 'myfile' not in request.FILES or not serializer_class.is_valid():
-            return Response({"error":True,"message":"something went wrong"}) 
-        else:
-            files = request.FILES.getlist('myfile')
-            for f in files:
-                handle_uploaded_file(f)
+    def post(self,request):
+        fileName=request.data['fileName']
+        fileDesc=request.data['fileDesc']
+        images = dict((request.data).lists())['myfile']
+        flag = 1
+        arr = []
+        for img_name in images:
+            modified_data = modify_input_for_multiple_files(fileName,fileDesc,img_name)
+            file_serializer = multipleuploadserializer(data=modified_data)
+            if file_serializer.is_valid():
+                file_serializer.save()
+                arr.append(file_serializer.data)
+            else:
+                flag = 0
 
-            return Response({"error":False,"message":"file uploaded successfully"})
-           
-def handle_uploaded_file(f):
-    with open(f.name, 'wb+') as destination:
-        for chunk in f.chunks():
-            destination.write(chunk)           
+        if flag == 1:
+            return Response({"error":False,"message":"upload successfully"})
+        else:
+            return Response({"error":True,"message":"something went wrong"})
+    
+    
+    
+        
+        
+def modify_input_for_multiple_files(fileName,fileDesc,myfile):
+    dict = {}
+    dict['fileName']=fileName
+    dict['fileDesc']=fileDesc
+    dict['myfile'] = myfile
+    return dict          
             
         
                 

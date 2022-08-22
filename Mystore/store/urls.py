@@ -13,7 +13,8 @@ urlpatterns = [
     path('getfiles/', views.get_files,name="getfiles"),
     path('catwiseproduct/',views.Catwiseproduct.as_view(),name="catwise"),
     path('deletefile/',deletefile.as_view(),name="deletefile"),
-    path('updatefile/', views.fileupdate.as_view(),name="updatefile")
+    path('updatefile/', views.fileupdate.as_view(),name="updatefile"),
+    path('multipleupload/',views.multipleupload.as_view(),name='multipleupload')
 ]
 
 

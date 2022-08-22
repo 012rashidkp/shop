@@ -7,6 +7,7 @@ class Banner(models.Model):
     banner_id=models.BigAutoField(primary_key=True,editable=False,db_column='banner_id')
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
+    created_at=models.DateTimeField(auto_now=True)
     image = models.ImageField(upload_to="banners/")
     
     def __str__(self):
@@ -19,6 +20,7 @@ class Category(models.Model):
     category_id=models.BigAutoField(primary_key=True,editable=False,db_column='category_id')
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
+    created_at=models.DateTimeField(auto_now=True)
     image = models.ImageField(upload_to="categories/")
 
     def __str__(self):
@@ -30,7 +32,7 @@ class Category(models.Model):
 class Product(models.Model):
     product_id=models.BigAutoField(primary_key=True,editable=False,db_column='product_id')
     title = models.CharField(max_length=200)
-    date = models.DateField(auto_now_add=True)
+    created_at = models.DateField(auto_now_add=True)
     slug = models.SlugField(unique=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE,db_column='category_id')
     image = models.ImageField(upload_to="products/")
@@ -50,6 +52,7 @@ class ProductImage(models.Model):
     image_id=models.BigAutoField(primary_key=True,editable=False,db_column='image_id')
     product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE, null=True,db_column='product_id')
     name = models.CharField(max_length=100)
+    created_at=models.DateTimeField(auto_now=True)
     images = models.ImageField(upload_to="Productimages/")
 
     @property
@@ -76,6 +79,7 @@ class ProductColor(models.Model):
     color_id=models.BigAutoField(primary_key=True,editable=False,db_column='color_id')
     Product = models.ForeignKey(Product, related_name='colors', on_delete=models.CASCADE, null=True,db_column='product_id')
     name = models.CharField(max_length=255)
+    created_at=models.DateTimeField(auto_now=True)
     colors = models.CharField(choices=COLORS, max_length=20, default="no colors")
 
     def __str__(self):
@@ -102,6 +106,7 @@ class ProductSize(models.Model):
     Product = models.ForeignKey(Product, related_name='sizes',on_delete=models.CASCADE, null=True,db_column='product_id')
     name = models.CharField(max_length=255)
     sizes = models.CharField(choices=SIZES, max_length=100, default='no sizes')
+    created_at=models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.sizes
@@ -135,6 +140,7 @@ class CartProduct(models.Model):
     delivery_charge = models.PositiveBigIntegerField(default=100)
     quantity = models.PositiveIntegerField()
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    created_at=models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Cart=={self.cart.id}<==>CartProduct:{self.id}==Qualtity=={self.quantity}"
@@ -153,6 +159,7 @@ class ShippingAddress(models.Model):
     destinationtype = models.CharField(max_length=50)
     mobile = models.CharField(max_length=10)
     email = models.EmailField(null=True, blank=True)
+    created_at=models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
@@ -202,7 +209,7 @@ class UploadFile(models.Model):
     fileName = models.CharField(max_length=150, blank=False, null=False)
     fileDesc = models.CharField(max_length=150, blank=False, null=False)
     myfile = models.FileField(upload_to="uploads/")
-    date = models.DateField(auto_now=True)
+    created_at=models.DateTimeField(auto_now=True)
     
     class Meta:
         db_table = "Uploads"        
